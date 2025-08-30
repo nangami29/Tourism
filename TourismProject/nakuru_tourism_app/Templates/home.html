@@ -1,7 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="text-center">
-        <h1>Welcome to TourismApp 🌍</h1>
-        <p>Discover attractions, explore categories, and share your ratings.</p>
-    </div>
+<div class="text-center">
+    <h1>Welcome to TourismApp</h1>
+    <p>Discover attractions, explore categories, and share your ratings.</p>
+</div>
+
+<hr>
+
+<h2>Tourist Attractions</h2>
+<ul>
+  {% for attraction in attractions %}
+    <li>
+      <a href="{% url 'attraction_detail' attraction.pk %}">{{ attraction.name }}</a>
+    </li>
+  {% empty %}
+    <li>No attractions available.</li>
+  {% endfor %}
+</ul>
 {% endblock %}

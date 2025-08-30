@@ -25,3 +25,27 @@ Backend: Django, Django REST Framework
 Database: PostgreSQL
 
 Version Control: Git & GitHub
+
+Nakuru Tourism App
+
+A Django web application for exploring tourist attractions in Nakuru County. Users can view attractions, see details, and leave ratings and reviews.
+
+Features
+
+Home Page: Displays a list of attractions with links to detail pages.
+
+Attraction Details: Shows name, description, image, and user ratings.
+
+Ratings & Reviews: Logged-in users can add, edit, or delete ratings for each attraction.
+
+User Authentication: Sign-up, login, logout, and profile management.
+
+Technologies
+
+Python 3.12
+
+Django 5.1
+
+HTML / Django Templates
+
+SQLite (default database)

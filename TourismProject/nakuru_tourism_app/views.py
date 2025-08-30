@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import TemplateView, CreateView, ListView, DeleteView, DetailView, UpdateView
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm, UserUpdateForm
+from . models import Attraction, Rating
+from .forms import AttractionForm, RatingForm
+from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 # Create your views here. 
 # user registration
 class SignUpView(CreateView):
@@ -60,3 +64,98 @@ class UserLoginView(LoginView):
 
 class LogoutView(LogoutView):
     next_page = reverse_lazy('login')
+class HomeView(ListView):
+    model = Attraction
+    template_name = "nakuru_tourism_app/home.html"
+    context_object_name = "attractions"
+    ordering = ['-created_at']
+
+class TourismListView(ListView):
+    model = Attraction
+    template_name = 'attractions/attraction_list.html'
+    context_object_name = 'attraction_list'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        print(qs)  
+        return qs
+
+class AttractionCreateView( LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Attraction
+    form_class = AttractionForm
+    template_name = "attractions/create_attrations.html"
+    success_url = reverse_lazy('attraction_list')
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+class AttractionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model =Attraction
+    fields = ['location', 'description', 'longitude',' latitude', 'entry_fee',
+              'opening_hours', 'image']
+    template_name = 'attractions/ update.html'
+    success_url = reverse_lazy('attraction_list')
+
+    def form_valid(self, form):
+        #Runs after the form is validated and before saving.
+        form.instance.author = self.request.user
+        response = super().form_valid(form)
+        return response
+    def test_func(self):
+        return self.request.user.is_staff
+class AttractionDetailView(DetailView):
+    model = Attraction
+    template_name = 'attractions/attraction_detail.html'
+    context_object_name = 'attraction'
+
+
+# delete an attraction
+class AttractionDeleteView(LoginRequiredMixin, UserPassesTestMixin,DeleteView):
+    model = Attraction 
+    template_name = 'attractions/ delete.html'
+    success_url =reverse_lazy('attraction_list')
+
+    def test_func(self):
+        return self.request.user.is_staff
+    
+
+    #CRUD for rating
+class RatingCreateView(LoginRequiredMixin, CreateView):
+    model = Rating
+    form_class = RatingForm
+    template_name ='ratings/rating_form.html'
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.attraction =  get_object_or_404(Attraction, pk=self.kwargs['pk'])
+        return super().form_valid(form)
+
+    
+    def get_success_url(self):
+        return self.object.attraction.get_absolute_url()
+class RatingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Rating
+    form_class = RatingForm
+    template_name = "ratings/rating_form.html"
+
+    def test_func(self):
+        rating = self.get_object()
+        return self.request.user == rating.user
+
+    def get_success_url(self):
+        return reverse_lazy("attraction_detail", kwargs={"pk": self.object.attraction.pk})
+
+class RatingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Rating
+    template_name = "ratings/rating_confirm_delete.html"
+
+    def test_func(self):
+        rating = self.get_object()
+        return self.request.user == rating.user
+
+    def get_success_url(self):
+        return reverse_lazy("attraction_detail", kwargs={"pk": self.object.attraction.pk})
+    
+class HomeView(TemplateView):
+    template_name = "nakuru_tourism_app/home.html"

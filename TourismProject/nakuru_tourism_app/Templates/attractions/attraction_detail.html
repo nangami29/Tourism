@@ -1,0 +1,29 @@
+<!-- attraction_detail.html -->
+<h1>{{ attraction.name }}</h1>
+<img src="{{ attraction.image.url }}" alt="{{ attraction.name }}" width="400">
+<p>{{ attraction.description }}</p>
+<p>Location: {{ attraction.location }}</p>
+<p>Entry Fee: {{ attraction.entry_fee }}</p>
+<p>Opening Hours: {{ attraction.opening_hours }}</p>
+
+<h3>Ratings & Reviews</h3>
+<ul>
+  {% for rating in attraction.ratings.all %}
+    <li>
+      {{ rating.score }} stars by {{ rating.user.username }} <br>
+      {{ rating.comment }}
+      {% if user == rating.user %}
+        <a href="{% url 'rating_update' rating.pk %}">Edit</a> |
+        <a href="{% url 'rating_delete' rating.pk %}">Delete</a>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>No ratings yet. Be the first to rate!</li>
+  {% endfor %}
+</ul>
+
+{% if user.is_authenticated %}
+  <a href="{% url 'rating_create' attraction.pk %}">+ Add your rating</a>
+{% else %}
+  <p><a href="{% url 'login' %}">Login</a> to leave a rating.</p>
+{% endif %}

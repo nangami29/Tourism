@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.urls import reverse
 # Create your models here.
 class CustomUser (AbstractUser):
    Role_CHOICES = (
@@ -12,8 +13,12 @@ class CustomUser (AbstractUser):
        return f"{self.username} ({self.role})"
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
-
+    
+    def __str__(self):
+        return self.name
+    
 class Attraction (models.Model):
+    
     name= models.CharField(max_length=200)
     description =models.TextField()
     location= models.CharField(max_length=200)
@@ -24,17 +29,16 @@ class Attraction (models.Model):
     created_at= models.DateTimeField(auto_now=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='attractions')
     image= models.ImageField(upload_to='attractions/')
-    def __str__(self):
-        return f"{self.name} - {self.location}"
-
+    def get_absolute_url(self):
+        return reverse("attraction_detail", kwargs={"pk": self.pk})
 class Rating (models.Model):
     user = models.ForeignKey(CustomUser,  on_delete= models.CASCADE)
-    attractions= models.ForeignKey(Attraction, on_delete=models.CASCADE)
-    score = models.PositiveSmallIntegerField()
+    attraction= models.ForeignKey(Attraction, on_delete=models.CASCADE)
+    score = models.PositiveSmallIntegerField(choices=[(i, i) for i in range (1, 6)])
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, blank=True, null=True)
+    comment = models.TextField(blank=True, null=True)
 
-
+    
     def __str__(self):
-        return self.name
-
+        return f"{self.attraction.name} - {self.stars} stars"

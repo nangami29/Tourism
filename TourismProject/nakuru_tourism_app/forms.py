@@ -42,4 +42,4 @@ class AttractionForm(forms.ModelForm):
 class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
-        fields = ['attractions', 'score']
+        fields = ['attraction', 'score', 'comment']
