@@ -26,11 +26,15 @@ class Attraction (models.Model):
     image= models.ImageField(upload_to='attractions/')
     def __str__(self):
         return f"{self.name} - {self.location}"
- # optimizing queries with prefetching
-attraction = Attraction.objects.prefetch_related('category')
 
 class Rating (models.Model):
-    user_id = models.ForeignKey(CustomUser,  on_delete= models.CASCADE)
-    attractions_id = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser,  on_delete= models.CASCADE)
+    attractions= models.ForeignKey(Attraction, on_delete=models.CASCADE)
     score = models.PositiveSmallIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.name
+

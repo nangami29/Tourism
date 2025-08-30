@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">👤 My Profile</h2>
+
+    <!-- User Info -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Role:</strong> {{ user.role }}</p>
+        </div>
+    </div>
+
+    <!-- Update Form -->
+    <h4>Update User Info</h4>
+    <form method="POST" enctype="multipart/form-data" class="mb-4">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        <button type="submit" class="btn btn-success"> Save Changes</button>
+    </form>
+
+    <!-- Navigation -->
+    <a href="{% url 'home' %}" class="btn btn-primary"> Continue to Home</a>
+    <a href="{% url 'logout' %}" class="btn btn-danger"> Logout</a>
+</div>
+{% endblock %}
