@@ -1,18 +1,25 @@
-<!-- attraction_detail.html -->
+{% extends "base.html" %}
+
+{% block content %}
 <h1>{{ attraction.name }}</h1>
-<img src="{{ attraction.image.url }}" alt="{{ attraction.name }}" width="400">
+
+{% if attraction.image %}
+  <img src="{{ attraction.image.url }}" alt="{{ attraction.name }}" width="400">
+{% endif %}
+
 <p>{{ attraction.description }}</p>
-<p>Location: {{ attraction.location }}</p>
-<p>Entry Fee: {{ attraction.entry_fee }}</p>
-<p>Opening Hours: {{ attraction.opening_hours }}</p>
+<p><strong>Location:</strong> {{ attraction.location }}</p>
+<p><strong>Entry Fee:</strong> {{ attraction.entry_fee }}</p>
+<p><strong>Opening Hours:</strong> {{ attraction.opening_hours }}</p>
 
 <h3>Ratings & Reviews</h3>
 <ul>
   {% for rating in attraction.ratings.all %}
     <li>
-      {{ rating.score }} stars by {{ rating.user.username }} <br>
+       {{ rating.score }} by <strong>{{ rating.user.username }}</strong><br>
       {{ rating.comment }}
       {% if user == rating.user %}
+        <br>
         <a href="{% url 'rating_update' rating.pk %}">Edit</a> |
         <a href="{% url 'rating_delete' rating.pk %}">Delete</a>
       {% endif %}
@@ -27,3 +34,4 @@
 {% else %}
   <p><a href="{% url 'login' %}">Login</a> to leave a rating.</p>
 {% endif %}
+{% endblock %}

@@ -7,7 +7,11 @@
         <li>
             <a href="{% url 'attraction_detail' attraction.pk %}">
                 {{ attraction.name }}
-            </a> - {{ attraction.location }}
+            </a> - {{ attraction.location }} <br>
+
+            {% if attraction.image %}
+                <img src="{{ attraction.image.url }}" alt="{{ attraction.name }}" width="200">
+            {% endif %}
         </li>
     {% empty %}
         <li>No attractions available yet.</li>
