@@ -10,6 +10,8 @@ from . models import Attraction, Rating
 from .forms import AttractionForm, RatingForm
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from taggit.models import Tag
+from django.db.models import Q
 # Create your views here. 
 # user registration
 class SignUpView(CreateView):
@@ -146,6 +148,13 @@ class RatingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy("attraction_detail", kwargs={"pk": self.object.attraction.pk})
 
+def attraction_detail(request, pk):
+    attraction = get_object_or_404(Attraction, pk=pk)
+    ratings = attraction.ratings.all()  
+    return render(request, "attractions/attraction_detail.html", {
+        "attraction": attraction,
+        "ratings": ratings
+    })
 class RatingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Rating
     template_name = "ratings/rating_confirm_delete.html"
@@ -159,3 +168,23 @@ class RatingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
 class HomeView(TemplateView):
     template_name = "nakuru_tourism_app/home.html"
+
+def attraction_by_tag (request, tag_name):
+    tag =get_object_or_404(Tag, name=tag_name)
+    attraction = Attraction.objects.filter(tags=tag)
+    return render(request, 'attractions/attraction_by_tag.html', {'tag': tag, 'attraction':attraction})
+
+def search_attractions(request):
+    query = request.GET.get('q')
+    results = []
+
+    if query:
+        results = Attraction.objects.filter(
+            Q(name__icontains=query) |            
+            Q(description__icontains=query) |   
+            Q(location__icontains=query) |       
+            Q(tags__name__icontains=query) |     
+            Q(category__name__icontains=query)   
+        ).distinct()
+
+    return render(request, 'search_results.html', {'results': results, 'query': query})

@@ -48,4 +48,4 @@ Django 5.1
 
 HTML / Django Templates
 
-SQLite (default database)
+PostgeSQL 
