@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Search Results for "{{ query }}"</h2>
+    <hr>
+
+    {% if results %}
+        <div class="row">
+            {% for attraction in results %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100">
+                        {% if attraction.image %}
+                            <img src="{{ attraction.image.url }}" class="card-img-top" alt="{{ attraction.name }}">
+                        {% else %}
+                            <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="No image available">
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h5 class="card-title">{{ attraction.name }}</h5>
+                            <p class="card-text">
+                                {{ attraction.description|truncatewords:20 }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Location:</strong> {{ attraction.location }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Category:</strong> {{ attraction.category.name }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Entry Fee:</strong> 
+                                {% if attraction.entry_fee %}
+                                    Ksh {{ attraction.entry_fee }}
+                                {% else %}
+                                    Free / Not specified
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="{{ attraction.get_absolute_url }}" class="btn btn-primary btn-sm">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            No attractions found for "<strong>{{ query }}</strong>".
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

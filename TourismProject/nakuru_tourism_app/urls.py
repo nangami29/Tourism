@@ -5,6 +5,7 @@ from .views import (
     AttractionCreateView, AttractionUpdateView, AttractionDeleteView,
     RatingCreateView, RatingUpdateView, RatingDeleteView,
 )
+from . import views
 
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
@@ -23,4 +24,6 @@ urlpatterns = [
     path('attractions/<int:pk>/rate/', RatingCreateView.as_view(), name='rating_create'),
     path('ratings/<int:pk>/edit/', RatingUpdateView.as_view(), name='rating_update'),
     path('ratings/<int:pk>/delete/', RatingDeleteView.as_view(), name='rating_delete'),
+    path('tags/<slug:tag_slug>/', views.attraction_by_tag, name='attraction by tag'),
+    path('search/', views.search_attractions, name='search Tourist Attractions'),
 ]

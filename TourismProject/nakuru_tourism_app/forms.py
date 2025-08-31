@@ -1,8 +1,8 @@
 from django import forms 
 from .models import CustomUser
-
+from taggit.forms import TagWidget
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser,  Attraction, Category, Rating
+from .models import CustomUser,  Attraction, Category, Rating, Tag
 # Custom user registration form
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -34,8 +34,11 @@ class AttractionForm(forms.ModelForm):
         model = Attraction
         fields = [
             'name', 'description', 'location', 'latitude', 'longitude',
-            'entry_fee', 'opening_hours', 'category', 'image'
+            'entry_fee', 'opening_hours', 'category', 'image', 'tags'
         ]
+        widgets ={
+            'tags': TagWidget(),
+        }
 
 
 # Rating form
@@ -43,3 +46,8 @@ class RatingForm(forms.ModelForm):
     class Meta:
         model = Rating
         fields = ['attraction', 'score', 'comment']
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields =['name']
